@@ -1,0 +1,140 @@
+.function-call-log {
+  background: var(--light-bg-chat);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  min-height: 200px;
+}
+
+.log-header {
+  padding: 0.875rem 1.25rem;
+  border-bottom: 2px solid var(--light-bg-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--dark-bg-sidebar);
+  flex-shrink: 0;
+}
+
+.log-header h3 {
+  color: var(--text-dark-primary);
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  margin: 0;
+}
+
+.badge {
+  background: var(--sea-nymph);
+  color: var(--text-dark-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: clamp(0.7rem, 1.8vw, 0.75rem);
+  font-weight: 600;
+}
+
+.log-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.875rem;
+  background: var(--light-bg-main);
+  -webkit-overflow-scrolling: touch;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-light-secondary);
+  padding: 2rem 1rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+}
+
+.call-entry {
+  background: var(--light-bg-chat);
+  border: 1px solid var(--light-bg-main);
+  border-radius: 8px;
+  padding: 0.875rem;
+  margin-bottom: 0.625rem;
+}
+
+.call-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.call-name {
+  font-weight: 600;
+  color: var(--sea-nymph);
+  font-family: 'Courier New', monospace;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  word-break: break-word;
+}
+
+.call-timestamp {
+  font-size: clamp(0.7rem, 1.8vw, 0.75rem);
+  color: var(--text-light-secondary);
+  white-space: nowrap;
+}
+
+.call-args,
+.call-result {
+  margin-top: 0.5rem;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+}
+
+.call-args strong,
+.call-result strong {
+  color: var(--text-light-secondary);
+}
+
+.call-args pre {
+  background: var(--light-bg-main);
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+  font-size: clamp(0.7rem, 1.8vw, 0.75rem);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.call-result {
+  color: var(--sea-nymph);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+/* Mobile specific */
+@media (max-width: 768px) {
+  .function-call-log {
+    height: 250px;
+    border-radius: 8px;
+  }
+
+  .log-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .log-content {
+    padding: 0.75rem;
+  }
+
+  .call-entry {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .function-call-log {
+    height: 220px;
+    border-radius: 6px;
+  }
+
+  .log-content {
+    padding: 0.5rem;
+  }
+}
