@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const OLLAMA_URL = 'http://localhost:11434';
 const MODEL = 'gemma4:e2b'; // Gemma 4 E2B variant
-const USE_FAST_MODE = false; // Use real Gemma responses
+const USE_FAST_MODE = false; // Must use real Gemma 4 for hackathon
 
 /**
  * Call Gemma 4 via Ollama API
@@ -15,16 +15,15 @@ export async function callGemma(prompt, systemPrompt = '', options = {}) {
     return getFallbackResponse(prompt);
   }
   
-  // Default options for chat responses (short and fast)
+  // Default options for chat responses (optimized for 8GB RAM, CPU-only)
   const defaultOptions = {
     temperature: 0.7,
     top_p: 0.9,
-    num_predict: 80,         // Short responses for chat
-    num_ctx: 1024,           // Reduced context window for faster processing
+    num_predict: 60,         // Reduced for faster generation
+    num_ctx: 512,            // Smaller context for less RAM usage
     top_k: 10,               // Lower sampling = faster generation
     repeat_penalty: 1.2,     // Reduce repetition
-    num_thread: 4,           // Optimize CPU threads
-    num_gpu: 0,              // Force CPU-only (you don't have NVIDIA GPU)
+    num_thread: 6,           // Increased threads for better CPU utilization (adjust based on CPU cores)
   };
   
   // Merge with custom options
@@ -37,11 +36,19 @@ export async function callGemma(prompt, systemPrompt = '', options = {}) {
       stream: false,
       options: gemmaOptions
     }, {
-      timeout: 60000  // 60 second timeout for longer responses
+      timeout: 180000  // 3 minutes timeout for CPU-only processing
     });
 
+    console.log('🔍 DEBUG Ollama response:', JSON.stringify(response.data, null, 2));
+    
     const result = response.data.response || '';
     console.log(`🤖 Gemma response length: ${result.length} chars`);
+    
+    if (result.length === 0) {
+      console.error('❌ Gemma returned empty response, using fallback');
+      return getFallbackResponse(prompt);
+    }
+    
     return result;
   } catch (error) {
     console.error('⚠️ Gemma API error:', error.message);
