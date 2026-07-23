@@ -59,7 +59,74 @@ Full technical spec: [`sakon-abu-spec (1).md`](./sakon-abu-spec%20(1).md)
 
 ## Setup
 
-### Prerequisites
+You have **two options** to run Sakon ABU: **Automated Setup** (recommended) or **Docker**.
+
+---
+
+### Option 1: Automated Setup (Recommended)
+
+**One command does everything:** installs dependencies, sets up Ollama, pulls Gemma 4, and starts the app.
+
+#### Windows:
+```powershell
+.\setup.ps1
+```
+
+#### Linux/Mac:
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+The script will:
+1. Check Node.js version (requires 18+)
+2. Install npm dependencies
+3. Verify Ollama installation
+4. Start Ollama service
+5. Pull Gemma 4 E2B model (if not already present)
+6. Initialize the database
+7. Start the application
+
+**Ports:**
+- Frontend: `http://localhost:3002`
+- Backend: `http://localhost:8080`
+
+**Prerequisites:**
+- Node.js 18+ ([download here](https://nodejs.org/))
+- Ollama ([download here](https://ollama.com/download))
+
+---
+
+### Option 2: Docker (Alternative)
+
+Run the entire stack in Docker containers (includes Ollama + Gemma 4).
+
+```bash
+# Build and start containers
+docker-compose up -d
+
+# Pull Gemma 4 model inside the Ollama container
+docker-compose exec ollama ollama pull gemma4:e2b
+
+# View logs
+docker-compose logs -f sakon-app
+```
+
+**Ports:**
+- Frontend: `http://localhost:3002`
+- Backend: `http://localhost:8080`
+- Ollama: `http://localhost:11434`
+
+**Prerequisites:**
+- Docker and Docker Compose ([install guide](https://docs.docker.com/get-docker/))
+
+**Note:** Docker setup requires at least 8GB RAM for Ollama + Gemma 4.
+
+---
+
+### Manual Setup (Advanced)
+
+If you prefer manual installation:
 
 1. **Install Node.js** (v18 or higher)
 2. **Install Ollama** 
@@ -68,29 +135,19 @@ Full technical spec: [`sakon-abu-spec (1).md`](./sakon-abu-spec%20(1).md)
    - Linux: `curl -fsSL https://ollama.com/install.sh | sh`
 3. **Pull Gemma 4 model**
    ```bash
-   ollama pull gemma4:e2b    # Gemma 4 E2B variant
+   ollama pull gemma4:e2b
    ```
-4. **Verify Ollama is working**
+4. **Clone and install**
    ```bash
-   ollama run gemma4:e2b "hello"
+   git clone <repo-url>
+   cd sakon-abu
+   npm install
+   npm run dev
    ```
 
-### Installation
-
-```bash
-# Clone the repository
-git clone <repo-url>
-cd sakon-abu
-
-# Install dependencies
-npm install
-
-# Run the application
-npm run dev
-```
-
-The frontend will be available at `http://localhost:3000`  
-The backend API runs at `http://localhost:3001`
+**Ports:**
+- Frontend: `http://localhost:3002`
+- Backend: `http://localhost:8080`
 
 **No internet connection required after initial model download!**
 
@@ -320,5 +377,6 @@ Built for **Build With Gemma: GDG on Campus ABU Zaria** (Track 2: Civic & Campus
 **Questions or issues?** Check that:
 1. Ollama is installed and running
 2. Gemma 4 model is pulled: `ollama list`
-3. Port 3000 (frontend) and 3001 (backend) are available
+3. Port 3002 (frontend) and 8080 (backend) are available
 4. Dependencies are installed: `npm install`
+5. For Docker: ensure Docker is running and has at least 8GB RAM allocated

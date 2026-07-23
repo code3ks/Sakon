@@ -4,24 +4,32 @@
   "description": "A Gemma 4-powered formal letter & petition agent for ABU students",
   "type": "module",
   "scripts": {
+    "install:all": "npm install",
+    "setup": "npm install && npm run test:setup",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "node --watch backend/server.js",
+    "dev:backend": "node backend/server.js",
     "dev:frontend": "vite",
+    "start": "npm run dev",
     "build": "vite build",
+    "build:backend": "echo 'Backend is Node.js - no build needed'",
     "preview": "vite preview",
     "test:setup": "node test-setup.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "better-sqlite3": "^9.2.2",
-    "axios": "^1.6.5"
+    "express": "4.19.2",
+    "cors": "2.8.5",
+    "better-sqlite3": "9.6.0",
+    "axios": "1.7.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.1",
-    "concurrently": "^8.2.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "vite": "^5.0.11"
+    "@vitejs/plugin-react": "4.3.0",
+    "concurrently": "8.2.2",
+    "vite": "5.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

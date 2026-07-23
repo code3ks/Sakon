@@ -1,6 +1,6 @@
 ﻿import axios from 'axios';
 
-const OLLAMA_URL = 'http://localhost:11434';
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 const MODEL = 'gemma4:e2b'; // Gemma 4 E2B variant
 const USE_FAST_MODE = false; // Must use real Gemma 4 for hackathon
 
