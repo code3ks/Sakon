@@ -1,0 +1,56 @@
+version: '3.8'
+
+# This docker-compose file uses the pre-built image from GitHub Container Registry
+# Perfect for reviewers who want to run the app without building from source
+
+services:
+  sakon-app:
+    image: ghcr.io/code3ks/sakon:latest
+    container_name: sakon-abu
+    ports:
+      - "3002:3002"  # Frontend
+      - "8080:8080"  # Backend API
+    volumes:
+      - ./backend/sakon.db:/app/backend/sakon.db
+      - ollama-data:/root/.ollama
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - OLLAMA_URL=http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - sakon-network
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sakon-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - sakon-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+
+volumes:
+  ollama-data:
+    driver: local
+
+networks:
+  sakon-network:
+    driver: bridge

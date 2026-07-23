@@ -153,6 +153,16 @@ If you prefer manual installation:
 
 ---
 
+## Quick Access for Reviewers
+
+🚀 **Want to test immediately?** Choose your preferred method:
+
+1. **[GitHub Codespaces](./CODESPACES.md)** - Run in browser with live URL (no installation)
+2. **[Pre-built Docker](./DOCKER_DEPLOY.md)** - One command to run everything (`docker-compose up`)
+3. **Automated Setup** - One-click script (see Setup section above)
+
+---
+
 ## Demo
 
 ### Live Demo Walkthrough
