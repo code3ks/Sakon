@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import cors from 'cors';
 import { initDatabase, getDb } from './database.js';
 import { callGemma, callGemmaForLetter } from './gemma.js';
@@ -195,119 +195,99 @@ Remember: You're a helpful friend who happens to be good at writing formal lette
 
       // Check if we should attempt classification
       if (shouldGenerateLetter && history.length >= 2) {
-        try {
-          // First, extract fields to check if we have enough information
+      try {
+        // Attempt to classify letter type
+        console.log('[FUNCTION] classify_letter_type');
+        const letterType = await classifyLetterType(conversationContext);
+        
+        functionCalls.push({
+          name: 'classify_letter_type',
+          arguments: { user_context: conversationContext.substring(0, 100) + '...' },
+          result: letterType,
+          timestamp: new Date().toISOString()
+        });
+
+        if (letterType && letterType !== 'unknown') {
+          console.log(`� Classified as: ${letterType}`);
+          
+          // Extract fields from conversation
           const fields = extractFields(conversationContext);
           
-          // Check if all required fields are present
-          const requiredFields = ['student_name', 'matric_number', 'department', 'level'];
-          const missingFields = [];
+          // Generate AI-powered unique letter using Gemma
+          console.log(' Generating unique letter with Gemma AI...');
+          console.log(' Extracted fields:', JSON.stringify({
+            name: fields.student_name,
+            matric: fields.matric_number,
+            dept: fields.department,
+            level: fields.level,
+            issue: fields.issue_description.substring(0, 100)
+          }, null, 2));
           
-          for (const field of requiredFields) {
-            if (!fields[field] || fields[field].length < 2 || fields[field].includes('[NOT PROVIDED]')) {
-              missingFields.push(field.replace(/_/g, ' '));
-            }
+          const aiLetter = await generateAILetter(letterType, fields, conversationContext);
+          
+          console.log(' Letter generated (first 300 chars):', aiLetter.substring(0, 300));
+          console.log(' Checking for conversational leakage...');
+          
+          // CRITICAL: Validate letter doesn't contain conversational phrases
+          const conversationalPhrases = [
+            /thank you for providing/i,
+            /i have enough information/i,
+            /let me prepare/i,
+            /i'll draft this/i,
+            /i will draft/i,
+            /here is your letter/i,
+            /i've drafted/i
+          ];
+          
+          const hasConversationalLeakage = conversationalPhrases.some(phrase => phrase.test(aiLetter));
+          
+          if (hasConversationalLeakage) {
+            console.error(' CRITICAL: Conversational text leaked into letter body!');
+            console.error('Letter content:', aiLetter.substring(0, 500));
+            throw new Error('Letter contains conversational chatbot text instead of formal content');
           }
           
-          // If we're missing required information, don't generate yet
-          if (missingFields.length > 0) {
-            console.log(`⚠️ Missing required fields: ${missingFields.join(', ')}`);
-            console.log('📝 Continuing conversation to collect more information...');
-            // Don't generate letter - let Gemma ask for the missing information
-            // The response already set from Gemma will guide the user
-          } else {
-            console.log('✅ All required fields present - proceeding with letter generation');
-            
-            // Attempt to classify letter type
-            console.log('[FUNCTION] classify_letter_type');
-            const letterType = await classifyLetterType(conversationContext);
-            
-            functionCalls.push({
-              name: 'classify_letter_type',
-              arguments: { user_context: conversationContext.substring(0, 100) + '...' },
-              result: letterType,
-              timestamp: new Date().toISOString()
-            });
+          console.log(' No conversational leakage detected');
+          
+          functionCalls.push({
+            name: 'generate_ai_letter',
+            arguments: { letter_type: letterType, fields: Object.keys(fields) },
+            result: 'Unique letter generated successfully',
+            timestamp: new Date().toISOString()
+          });
 
-            if (letterType && letterType !== 'unknown') {
-              console.log(`📋 Classified as: ${letterType}`);
-              
-              // Generate AI-powered unique letter using Gemma
-              console.log('📝 Generating unique letter with Gemma AI...');
-              console.log('✅ Extracted fields:', JSON.stringify({
-                name: fields.student_name,
-                matric: fields.matric_number,
-                dept: fields.department,
-                level: fields.level,
-                issue: fields.issue_description.substring(0, 100)
-              }, null, 2));
-              
-              const aiLetter = await generateAILetter(letterType, fields, conversationContext);
-              
-              console.log('📄 Letter generated (first 300 chars):', aiLetter.substring(0, 300));
-              console.log('🔍 Checking for conversational leakage...');
-              
-              // CRITICAL: Validate letter doesn't contain conversational phrases
-              const conversationalPhrases = [
-                /thank you for providing/i,
-                /i have enough information/i,
-                /let me prepare/i,
-                /i'll draft this/i,
-                /i will draft/i,
-                /here is your letter/i,
-                /i've drafted/i
-              ];
-              
-              const hasConversationalLeakage = conversationalPhrases.some(phrase => phrase.test(aiLetter));
-              
-              if (hasConversationalLeakage) {
-                console.error('❌ CRITICAL: Conversational text leaked into letter body!');
-                console.error('Letter content:', aiLetter.substring(0, 500));
-                throw new Error('Letter contains conversational chatbot text instead of formal content');
-              }
-              
-              console.log('✅ No conversational leakage detected');
-              
-              functionCalls.push({
-                name: 'generate_ai_letter',
-                arguments: { letter_type: letterType, fields: Object.keys(fields) },
-                result: 'Unique letter generated successfully',
-                timestamp: new Date().toISOString()
-              });
+          // Check register
+          console.log(' Function call: check_register');
+          const registerCheck = checkRegister(aiLetter, conversationContext);
+          
+          functionCalls.push({
+            name: 'check_register',
+            arguments: { draft_letter: aiLetter.substring(0, 50) + '...' },
+            result: `${registerCheck.flagged_issues.length} checks performed`,
+            timestamp: new Date().toISOString()
+          });
 
-              // Check register
-              console.log('📋 Function call: check_register');
-              const registerCheck = checkRegister(aiLetter, conversationContext);
-              
-              functionCalls.push({
-                name: 'check_register',
-                arguments: { draft_letter: aiLetter.substring(0, 50) + '...' },
-                result: `${registerCheck.flagged_issues.length} checks performed`,
-                timestamp: new Date().toISOString()
-              });
+          // Create letter object
+          const letterId = Date.now().toString();
+          letter = {
+            id: letterId,
+            letterType,
+            content: registerCheck.corrected_letter,
+            registerChecks: registerCheck.flagged_issues,
+          };
 
-              // Create letter object
-              const letterId = Date.now().toString();
-              letter = {
-                id: letterId,
-                letterType,
-                content: registerCheck.corrected_letter,
-                registerChecks: registerCheck.flagged_issues,
-              };
+          // Save letter to database
+          db.prepare(`
+            INSERT INTO letters (id, session_id, letter_type, content, created_at)
+            VALUES (?, ?, ?, ?, ?)
+          `).run(letterId, sessionId, letterType, letter.content, new Date().toISOString());
 
-              // Save letter to database
-              db.prepare(`
-                INSERT INTO letters (id, session_id, letter_type, content, created_at)
-                VALUES (?, ?, ?, ?, ?)
-              `).run(letterId, sessionId, letterType, letter.content, new Date().toISOString());
-
-              response = "I've drafted your letter! Please review it in the preview pane. You can copy it, download it, or send it via email.";
-            }
-          }
-        } catch (error) {
-          console.error('Error generating letter:', error);
+          response = "I've drafted your letter! Please review it in the preview pane. You can copy it, download it, or send it via email.";
         }
+      } catch (error) {
+        console.error('Error generating letter:', error);
       }
+    }
   }
 
     // Save assistant message
