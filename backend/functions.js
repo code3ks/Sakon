@@ -1,4 +1,4 @@
-import { letterTemplates } from './templates.js';
+﻿import { letterTemplates } from './templates.js';
 
 /**
  * Function: classify_letter_type

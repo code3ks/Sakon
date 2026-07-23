@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 const OLLAMA_URL = 'http://localhost:11434';
 const MODEL = 'gemma4:e2b'; // Gemma 4 E2B variant
@@ -39,19 +39,19 @@ export async function callGemma(prompt, systemPrompt = '', options = {}) {
       timeout: 180000  // 3 minutes timeout for CPU-only processing
     });
 
-    console.log('🔍 DEBUG Ollama response:', JSON.stringify(response.data, null, 2));
+    console.log(' DEBUG Ollama response:', JSON.stringify(response.data, null, 2));
     
     const result = response.data.response || '';
-    console.log(`🤖 Gemma response length: ${result.length} chars`);
+    console.log(` Gemma response length: ${result.length} chars`);
     
     if (result.length === 0) {
-      console.error('❌ Gemma returned empty response, using fallback');
+      console.error(' Gemma returned empty response, using fallback');
       return getFallbackResponse(prompt);
     }
     
     return result;
   } catch (error) {
-    console.error('⚠️ Gemma API error:', error.message);
+    console.error(' Gemma API error:', error.message);
     console.log('⚡ Falling back to rule-based response');
     
     // Fallback to rule-based response if Gemma fails

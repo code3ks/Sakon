@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import cors from 'cors';
 import { initDatabase, getDb } from './database.js';
 import { callGemma, callGemmaForLetter } from './gemma.js';
@@ -102,17 +102,17 @@ You: "I'll help you draft a hostel complaint. I need your full name, matric numb
     let letter = null;
 
     // Call Gemma for conversational response
-    console.log('💬 Calling Gemma for CHAT REPLY...');
-    console.log('📥 Chat prompt (first 200 chars):', conversationContext.substring(0, 200));
+    console.log('[CHAT] Calling Gemma for CHAT REPLY...');
+    console.log('[CHAT] Chat prompt (first 200 chars):', conversationContext.substring(0, 200));
     const gemmaResponse = await callGemma(conversationContext, systemPrompt);
-    console.log('📤 Chat response received:', gemmaResponse.substring(0, 150));
+    console.log('[CHAT] Chat response received:', gemmaResponse.substring(0, 150));
     response = gemmaResponse;
 
     // Check if we should attempt classification
     if (shouldGenerateLetter && history.length >= 2) {
       try {
         // Attempt to classify letter type
-        console.log('🔧 Function call: classify_letter_type');
+        console.log('[FUNCTION] classify_letter_type');
         const letterType = await classifyLetterType(conversationContext);
         
         functionCalls.push({
@@ -123,14 +123,14 @@ You: "I'll help you draft a hostel complaint. I need your full name, matric numb
         });
 
         if (letterType && letterType !== 'unknown') {
-          console.log(`📝 Classified as: ${letterType}`);
+          console.log(`� Classified as: ${letterType}`);
           
           // Extract fields from conversation
           const fields = extractFields(conversationContext);
           
           // Generate AI-powered unique letter using Gemma
-          console.log('🤖 Generating unique letter with Gemma AI...');
-          console.log('📋 Extracted fields:', JSON.stringify({
+          console.log(' Generating unique letter with Gemma AI...');
+          console.log(' Extracted fields:', JSON.stringify({
             name: fields.student_name,
             matric: fields.matric_number,
             dept: fields.department,
@@ -140,8 +140,8 @@ You: "I'll help you draft a hostel complaint. I need your full name, matric numb
           
           const aiLetter = await generateAILetter(letterType, fields, conversationContext);
           
-          console.log('✅ Letter generated (first 300 chars):', aiLetter.substring(0, 300));
-          console.log('🔍 Checking for conversational leakage...');
+          console.log(' Letter generated (first 300 chars):', aiLetter.substring(0, 300));
+          console.log(' Checking for conversational leakage...');
           
           // CRITICAL: Validate letter doesn't contain conversational phrases
           const conversationalPhrases = [
@@ -157,12 +157,12 @@ You: "I'll help you draft a hostel complaint. I need your full name, matric numb
           const hasConversationalLeakage = conversationalPhrases.some(phrase => phrase.test(aiLetter));
           
           if (hasConversationalLeakage) {
-            console.error('❌ CRITICAL: Conversational text leaked into letter body!');
+            console.error(' CRITICAL: Conversational text leaked into letter body!');
             console.error('Letter content:', aiLetter.substring(0, 500));
             throw new Error('Letter contains conversational chatbot text instead of formal content');
           }
           
-          console.log('✓ No conversational leakage detected');
+          console.log(' No conversational leakage detected');
           
           functionCalls.push({
             name: 'generate_ai_letter',
@@ -172,7 +172,7 @@ You: "I'll help you draft a hostel complaint. I need your full name, matric numb
           });
 
           // Check register
-          console.log('🔧 Function call: check_register');
+          console.log(' Function call: check_register');
           const registerCheck = checkRegister(aiLetter, conversationContext);
           
           functionCalls.push({
@@ -249,14 +249,14 @@ app.post('/api/letter/send', (req, res) => {
     if (isOffline || true) { // For demo, always queue
       // Add to queue with CURRENT timestamp
       const currentTimestamp = new Date().toISOString();
-      console.log(`📮 Queueing letter ${letterId} with timestamp: ${currentTimestamp}`);
+      console.log(` Queueing letter ${letterId} with timestamp: ${currentTimestamp}`);
       
       db.prepare(`
         INSERT INTO send_queue (letter_id, letter_type, method, destination, status, timestamp)
         VALUES (?, ?, ?, ?, ?, ?)
       `).run(letterId, letter.letter_type, method, destination, 'pending', currentTimestamp);
 
-      console.log(`✅ Letter queued successfully`);
+      console.log(` Letter queued successfully`);
       res.json({ queued: true });
     } else {
       // Send immediately (implement actual sending logic here)
@@ -281,7 +281,7 @@ app.post('/api/queue/flush', async (req, res) => {
       // Simulate sending (in real app, would actually send email here)
       // Update status AND timestamp to show when it was actually sent
       const sentTimestamp = new Date().toISOString();
-      console.log(`📤 Flushing item ${item.letter_id} - New timestamp: ${sentTimestamp}`);
+      console.log(` Flushing item ${item.letter_id} - New timestamp: ${sentTimestamp}`);
       
       db.prepare(`
         UPDATE send_queue SET status = 'sent', timestamp = ? WHERE letter_id = ?
@@ -289,7 +289,7 @@ app.post('/api/queue/flush', async (req, res) => {
       flushed++;
     }
 
-    console.log(`✅ Flushed ${flushed} items from queue`);
+    console.log(` Flushed ${flushed} items from queue`);
     res.json({ flushed });
   } catch (error) {
     console.error('Flush error:', error);
@@ -362,15 +362,15 @@ OUTPUT: Return ONLY the body paragraphs as plain text, no preamble, no markdown.
 
   try {
     // Generate body paragraphs
-    console.log('📝 Calling Gemma for LETTER BODY generation...');
-    console.log('📥 Body prompt (first 300 chars):', bodyPrompt.substring(0, 300));
+    console.log('� Calling Gemma for LETTER BODY generation...');
+    console.log(' Body prompt (first 300 chars):', bodyPrompt.substring(0, 300));
     
     const bodyParagraphs = await callGemmaForLetter(
       bodyPrompt,
       'You draft formal letter bodies. Output only the paragraph text, nothing else.'
     );
     
-    console.log('📤 Body paragraphs received (first 300 chars):', bodyParagraphs.substring(0, 300));
+    console.log(' Body paragraphs received (first 300 chars):', bodyParagraphs.substring(0, 300));
     
     // CRITICAL: Validate body paragraphs don't contain conversational chatbot text
     const conversationalPhrases = [
@@ -385,9 +385,9 @@ OUTPUT: Return ONLY the body paragraphs as plain text, no preamble, no markdown.
     const hasConversationalText = conversationalPhrases.some(phrase => phrase.test(bodyParagraphs));
     
     if (hasConversationalText) {
-      console.error('❌ CRITICAL: Body generation returned conversational text instead of letter content!');
+      console.error(' CRITICAL: Body generation returned conversational text instead of letter content!');
       console.error('Body received:', bodyParagraphs);
-      console.log('⚠️ Falling back to template...');
+      console.log(' Falling back to template...');
       return fillTemplate(letterType, fields);
     }
     
@@ -431,7 +431,7 @@ Level: ${fields.level}`;
     const hasRawChatDump = firstUserMessage.length > 20 && letterLower.includes(firstUserMessage.substring(0, 50));
     
     if (!hasLetterStructure || !hasStudentName || !hasMatricNumber || hasRawChatDump || completeLetter.length < 300) {
-      console.log('⚠️ AI output invalid or contains raw chat text, using template fallback');
+      console.log(' AI output invalid or contains raw chat text, using template fallback');
       return fillTemplate(letterType, fields);
     }
     
@@ -490,7 +490,7 @@ function extractFields(context) {
       matric = matric.replace(/([A-Z]{2})O(\d)/g, '$10$2');  // After dept code
       matric = matric.replace(/(\d)O(\d)/g, '$10$2');  // Between digits
       fields.matric_number = matric;
-      console.log(`✓ Matric extracted: ${matric}`);
+      console.log(` Matric extracted: ${matric}`);
       break;
     }
   }
@@ -533,7 +533,7 @@ function extractFields(context) {
       const match = context.match(pattern);
       if (match && match[1]) {
         fields.department = match[1].trim();
-        console.log(`✓ Department EXTRACTED from user input: ${fields.department}`);
+        console.log(` Department EXTRACTED from user input: ${fields.department}`);
         break;
       }
     }
@@ -558,7 +558,7 @@ function extractFields(context) {
       let level = match[1];
       if (level.length === 1) level = level + '00';
       fields.level = level;
-      console.log(`✓ Level EXTRACTED from user input: ${fields.level}`);
+      console.log(` Level EXTRACTED from user input: ${fields.level}`);
       break;
     }
   }
@@ -650,7 +650,7 @@ function extractFields(context) {
       if (monthMatch) {
         const month = monthMatch[1].charAt(0).toUpperCase() + monthMatch[1].slice(1).toLowerCase();
         fields.relevant_dates = `since ${month} 2026`;
-        console.log(`✓ Date extracted: ${fields.relevant_dates}`);
+        console.log(` Date extracted: ${fields.relevant_dates}`);
       } else {
         const timeMatch = context.match(/(last week|last month|this month|two weeks ago|a month ago|recently)/i);
         if (timeMatch) {
@@ -669,12 +669,12 @@ function extractFields(context) {
   }
   
   // Log extraction summary
-  console.log('📋 Extracted fields:', {
-    name: fields.student_name ? '✓' : '✗',
-    matric: fields.matric_number ? '✓' : '✗',
-    department: fields.department ? '✓' : '✗',
-    level: fields.level ? '✓' : '✗',
-    issue: fields.issue_description ? '✓' : '✗'
+  console.log(' Extracted fields:', {
+    name: fields.student_name ? '' : '✗',
+    matric: fields.matric_number ? '' : '✗',
+    department: fields.department ? '' : '✗',
+    level: fields.level ? '' : '✗',
+    issue: fields.issue_description ? '' : '✗'
   });
   
   // Extract time references
@@ -725,16 +725,16 @@ function extractFields(context) {
 
   // Final extraction summary
   console.log('\n═══════════════════════════════════════');
-  console.log('📋 FINAL EXTRACTION RESULTS:');
+  console.log(' FINAL EXTRACTION RESULTS:');
   console.log('═══════════════════════════════════════');
   console.log(`Name: ${fields.student_name || '[NOT PROVIDED]'}`);
   console.log(`Matric: ${fields.matric_number || '[NOT PROVIDED]'}`);
-  console.log(`Department: ${fields.department || '[NOT PROVIDED]'} ${fields.department ? '✓ EXPLICIT' : '✗ NOT STATED'}`);
-  console.log(`Level: ${fields.level || '[NOT PROVIDED]'} ${fields.level ? '✓ EXPLICIT' : '✗ NOT STATED'}`);
+  console.log(`Department: ${fields.department || '[NOT PROVIDED]'} ${fields.department ? ' EXPLICIT' : '✗ NOT STATED'}`);
+  console.log(`Level: ${fields.level || '[NOT PROVIDED]'} ${fields.level ? ' EXPLICIT' : '✗ NOT STATED'}`);
   console.log(`Issue: ${fields.issue_description ? fields.issue_description.substring(0, 80) + '...' : '[NOT PROVIDED]'}`);
   console.log('═══════════════════════════════════════');
-  console.log('⚠️  NO INFERENCE: Department and level are NEVER guessed');
-  console.log('✅  EXPLICIT ONLY: All fields come from user statements');
+  console.log('  NO INFERENCE: Department and level are NEVER guessed');
+  console.log('  EXPLICIT ONLY: All fields come from user statements');
   console.log('═══════════════════════════════════════\n');
 
   return fields;
@@ -742,15 +742,15 @@ function extractFields(context) {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n' + '═'.repeat(60));
-  console.log('🚀 Sakon ABU Backend Started');
+  console.log(' Sakon ABU Backend Started');
   console.log('═'.repeat(60));
-  console.log(`📡 API Server:        http://localhost:${PORT}`);
-  console.log(`💬 Gemma 4:           via Ollama (localhost:11434)`);
-  console.log(`💾 Database:          SQLite (backend/sakon.db)`);
-  console.log(`📝 Letter Templates:  5 types available`);
+  console.log(` API Server:        http://localhost:${PORT}`);
+  console.log(` Gemma 4:           via Ollama (localhost:11434)`);
+  console.log(` Database:          SQLite (backend/sakon.db)`);
+  console.log(`� Letter Templates:  5 types available`);
   console.log('═'.repeat(60));
-  console.log('✅ Ready to draft letters!');
-  console.log('📚 Docs: See README.md or INDEX.md for help');
-  console.log('🧪 Test: Try scenarios from DEMO_SCENARIOS.md');
+  console.log(' Ready to draft letters!');
+  console.log('� Docs: See README.md or INDEX.md for help');
+  console.log('� Test: Try scenarios from DEMO_SCENARIOS.md');
   console.log('═'.repeat(60) + '\n');
 });

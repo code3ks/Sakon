@@ -1,11 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import './FunctionCallLog.css';
 
 function FunctionCallLog({ calls }) {
   return (
     <div className="function-call-log">
       <div className="log-header">
-        <h3>🔧 Function Calls</h3>
+        <h3> Function Calls</h3>
         <span className="badge">{calls.length}</span>
       </div>
 

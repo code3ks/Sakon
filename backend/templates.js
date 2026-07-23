@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Letter templates following Nigerian university formal letter conventions
  * Each template includes proper structure: address block, date, recipient, subject, body, closing
  */

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import ChatInterface from './components/ChatInterface';
 import LetterPreview from './components/LetterPreview';
@@ -138,7 +138,7 @@ function App() {
             className={`offline-toggle ${isOffline ? 'offline' : 'online'}`}
             onClick={toggleOfflineMode}
           >
-            {isOffline ? '📵 Offline Mode' : '🌐 Online'}
+            {isOffline ? '� Offline Mode' : '� Online'}
           </button>
         </div>
       </header>

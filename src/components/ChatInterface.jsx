@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import './ChatInterface.css';
 
 function ChatInterface({ messages, onSendMessage, isLoading }) {
@@ -79,7 +79,7 @@ function ChatInterface({ messages, onSendMessage, isLoading }) {
       <div className="messages-container">
         {messages.length === 0 && (
           <div className="welcome-message">
-            <h3>👋 Sannu! Welcome!</h3>
+            <h3>� Sannu! Welcome!</h3>
             <p>Tell me about the letter you need to write. For example:</p>
             <ul>
               <li>"My hostel roommate keeps stealing my things"</li>
@@ -126,7 +126,7 @@ function ChatInterface({ messages, onSendMessage, isLoading }) {
           disabled={isLoading}
           title="Voice input (optional)"
         >
-          {isRecording ? '⏹️' : '🎤'}
+          {isRecording ? '⏹' : '�'}
         </button>
         <button
           type="submit"

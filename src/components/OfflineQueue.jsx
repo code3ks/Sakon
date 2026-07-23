@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import './OfflineQueue.css';
 
 function OfflineQueue({ queue, onRefresh, onFlush }) {
@@ -7,15 +7,15 @@ function OfflineQueue({ queue, onRefresh, onFlush }) {
   return (
     <div className="offline-queue">
       <div className="queue-header">
-        <h3>📮 Send Queue</h3>
+        <h3> Send Queue</h3>
         <div className="queue-actions">
           {hasPending && (
             <button onClick={onFlush} className="flush-btn" title="Send all pending">
-              ▶️
+              
             </button>
           )}
           <button onClick={onRefresh} className="refresh-btn" title="Refresh">
-            🔄
+            �
           </button>
         </div>
       </div>
@@ -29,9 +29,9 @@ function OfflineQueue({ queue, onRefresh, onFlush }) {
               <div className="item-header">
                 <span className="item-type">{item.letterType}</span>
                 <span className={`status-badge ${item.status}`}>
-                  {item.status === 'pending' && '⏳ Pending'}
-                  {item.status === 'sent' && '✅ Sent'}
-                  {item.status === 'failed' && '❌ Failed'}
+                  {item.status === 'pending' && ' Pending'}
+                  {item.status === 'sent' && ' Sent'}
+                  {item.status === 'failed' && ' Failed'}
                 </span>
               </div>
               <div className="item-details">

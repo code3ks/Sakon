@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import './LetterPreview.css';
 
 function LetterPreview({ letter, onSend }) {
@@ -11,7 +11,7 @@ function LetterPreview({ letter, onSend }) {
     return (
       <div className="letter-preview empty-state">
         <div className="empty-content">
-          <div className="empty-icon">📝</div>
+          <div className="empty-icon">�</div>
           <h3>No Letter Yet</h3>
           <p>Start a conversation in the chat to generate your formal letter.</p>
           <div className="empty-tips">
@@ -55,7 +55,7 @@ function LetterPreview({ letter, onSend }) {
   return (
     <div className="letter-preview">
       <div className="preview-header">
-        <h2>📄 Your Letter</h2>
+        <h2>� Your Letter</h2>
         <div className="letter-type-badge">
           {letter.letterType.replace(/_/g, ' ').toUpperCase()}
         </div>
@@ -63,12 +63,12 @@ function LetterPreview({ letter, onSend }) {
 
       {letter.registerChecks && letter.registerChecks.length > 0 && (
         <div className="register-checks">
-          <h3>✅ Quality Checks</h3>
+          <h3> Quality Checks</h3>
           <ul>
             {letter.registerChecks.map((check, idx) => (
               <li key={idx} className={check.status}>
                 <span className="check-icon">
-                  {check.status === 'passed' ? '✅' : '⚠️'}
+                  {check.status === 'passed' ? '' : ''}
                 </span>
                 {check.message}
               </li>
@@ -83,13 +83,13 @@ function LetterPreview({ letter, onSend }) {
 
       <div className="preview-actions">
         <button onClick={handleCopy} className="action-btn copy">
-          📋 Copy
+           Copy
         </button>
         <button onClick={handleDownload} className="action-btn download">
-          ⬇️ Download
+          ⬇ Download
         </button>
         <button onClick={() => setShowSendModal(true)} className="action-btn send">
-          📧 Send/Export
+          � Send/Export
         </button>
       </div>
 

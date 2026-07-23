@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 /**
  * Setup verification script for Sakon ABU
@@ -11,7 +11,7 @@ import http from 'http';
 
 const execAsync = promisify(exec);
 
-console.log('🔍 Sakon ABU Setup Verification\n');
+console.log(' Sakon ABU Setup Verification\n');
 
 const checks = [];
 
@@ -23,12 +23,12 @@ async function checkNode() {
     const major = parseInt(version.slice(1).split('.')[0]);
     
     if (major >= 18) {
-      checks.push({ name: 'Node.js', status: '✅', detail: version });
+      checks.push({ name: 'Node.js', status: '', detail: version });
     } else {
-      checks.push({ name: 'Node.js', status: '❌', detail: `${version} (need v18+)` });
+      checks.push({ name: 'Node.js', status: '', detail: `${version} (need v18+)` });
     }
   } catch (error) {
-    checks.push({ name: 'Node.js', status: '❌', detail: 'Not installed' });
+    checks.push({ name: 'Node.js', status: '', detail: 'Not installed' });
   }
 }
 
@@ -36,9 +36,9 @@ async function checkNode() {
 async function checkNpm() {
   try {
     const { stdout } = await execAsync('npm --version');
-    checks.push({ name: 'npm', status: '✅', detail: stdout.trim() });
+    checks.push({ name: 'npm', status: '', detail: stdout.trim() });
   } catch (error) {
-    checks.push({ name: 'npm', status: '❌', detail: 'Not installed' });
+    checks.push({ name: 'npm', status: '', detail: 'Not installed' });
   }
 }
 
@@ -46,9 +46,9 @@ async function checkNpm() {
 async function checkOllama() {
   try {
     const { stdout } = await execAsync('ollama --version');
-    checks.push({ name: 'Ollama', status: '✅', detail: stdout.trim() });
+    checks.push({ name: 'Ollama', status: '', detail: stdout.trim() });
   } catch (error) {
-    checks.push({ name: 'Ollama', status: '⚠️', detail: 'Not installed (optional but recommended)' });
+    checks.push({ name: 'Ollama', status: '', detail: 'Not installed (optional but recommended)' });
   }
 }
 
@@ -56,18 +56,18 @@ async function checkOllama() {
 async function checkOllamaRunning() {
   return new Promise((resolve) => {
     const req = http.get('http://localhost:11434', (res) => {
-      checks.push({ name: 'Ollama Service', status: '✅', detail: 'Running on port 11434' });
+      checks.push({ name: 'Ollama Service', status: '', detail: 'Running on port 11434' });
       resolve();
     });
     
     req.on('error', () => {
-      checks.push({ name: 'Ollama Service', status: '⚠️', detail: 'Not running (start with: ollama serve)' });
+      checks.push({ name: 'Ollama Service', status: '', detail: 'Not running (start with: ollama serve)' });
       resolve();
     });
     
     req.setTimeout(2000, () => {
       req.destroy();
-      checks.push({ name: 'Ollama Service', status: '⚠️', detail: 'Timeout' });
+      checks.push({ name: 'Ollama Service', status: '', detail: 'Timeout' });
       resolve();
     });
   });
@@ -79,12 +79,12 @@ async function checkGemmaModel() {
     const { stdout } = await execAsync('ollama list');
     if (stdout.includes('gemma4')) {
       const variant = stdout.match(/gemma4:(\w+)/)?.[1] || 'unknown';
-      checks.push({ name: 'Gemma 4 Model', status: '✅', detail: `gemma4:${variant}` });
+      checks.push({ name: 'Gemma 4 Model', status: '', detail: `gemma4:${variant}` });
     } else {
-      checks.push({ name: 'Gemma 4 Model', status: '❌', detail: 'Not pulled (run: ollama pull gemma4:e2b)' });
+      checks.push({ name: 'Gemma 4 Model', status: '', detail: 'Not pulled (run: ollama pull gemma4:e2b)' });
     }
   } catch (error) {
-    checks.push({ name: 'Gemma 4 Model', status: '⚠️', detail: 'Could not check (Ollama not installed?)' });
+    checks.push({ name: 'Gemma 4 Model', status: '', detail: 'Could not check (Ollama not installed?)' });
   }
 }
 
@@ -93,12 +93,12 @@ async function checkDependencies() {
   try {
     const fs = await import('fs');
     if (fs.existsSync('./node_modules')) {
-      checks.push({ name: 'Dependencies', status: '✅', detail: 'Installed' });
+      checks.push({ name: 'Dependencies', status: '', detail: 'Installed' });
     } else {
-      checks.push({ name: 'Dependencies', status: '❌', detail: 'Not installed (run: npm install)' });
+      checks.push({ name: 'Dependencies', status: '', detail: 'Not installed (run: npm install)' });
     }
   } catch (error) {
-    checks.push({ name: 'Dependencies', status: '❌', detail: 'Error checking' });
+    checks.push({ name: 'Dependencies', status: '', detail: 'Error checking' });
   }
 }
 
@@ -118,22 +118,22 @@ async function runChecks() {
   });
   
   // Summary
-  const passed = checks.filter(c => c.status === '✅').length;
-  const failed = checks.filter(c => c.status === '❌').length;
-  const warnings = checks.filter(c => c.status === '⚠️').length;
+  const passed = checks.filter(c => c.status === '').length;
+  const failed = checks.filter(c => c.status === '').length;
+  const warnings = checks.filter(c => c.status === '').length;
   
   console.log(`\n${'─'.repeat(60)}`);
-  console.log(`✅ Passed: ${passed}   ❌ Failed: ${failed}   ⚠️  Warnings: ${warnings}`);
+  console.log(` Passed: ${passed}    Failed: ${failed}     Warnings: ${warnings}`);
   
   if (failed === 0) {
-    console.log('\n🎉 All critical checks passed! You\'re ready to run:');
+    console.log('\n All critical checks passed! You\'re ready to run:');
     console.log('   npm run dev');
   } else {
-    console.log('\n⚠️  Some checks failed. Please fix them before running the app.');
+    console.log('\n  Some checks failed. Please fix them before running the app.');
   }
   
   // Next steps
-  console.log('\n📚 Next steps:');
+  console.log('\n� Next steps:');
   if (failed > 0) {
     console.log('   1. Fix the failed checks above');
     console.log('   2. Run this script again to verify');
