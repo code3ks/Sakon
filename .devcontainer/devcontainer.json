@@ -2,10 +2,6 @@
   "name": "Sakon ABU Development",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
   
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-  },
-  
   "forwardPorts": [3002, 8080, 11434],
   "portsAttributes": {
     "3002": {

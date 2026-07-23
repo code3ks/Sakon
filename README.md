@@ -59,13 +59,69 @@ Full technical spec: [`sakon-abu-spec (1).md`](./sakon-abu-spec%20(1).md)
 
 ## Setup
 
-You have **two options** to run Sakon ABU: **Automated Setup** (recommended) or **Docker**.
+You have **three options** to run Sakon ABU:
 
 ---
 
-### Option 1: Automated Setup (Recommended)
+### Option 1: GitHub Codespaces (Cloud - No Installation)
 
-**One command does everything:** installs dependencies, sets up Ollama, pulls Gemma 4, and starts the app.
+**Best for:** Reviewers who want a live URL without any local setup.
+
+**Steps:**
+1. Go to https://github.com/code3ks/Sakon
+2. Click **"Code"** → **"Codespaces"** → **"Create codespace on main"**
+3. Wait for the environment to build (~2-3 minutes)
+4. In the Codespace terminal, run:
+   ```bash
+   chmod +x .devcontainer/setup-codespaces.sh
+   ./.devcontainer/setup-codespaces.sh
+   npm start
+   ```
+5. Click **"PORTS"** tab → Right-click port **3002** → **"Port Visibility"** → **"Public"**
+6. Copy the public URL and share/test it
+
+**Time:** ~8 minutes (includes Gemma 4 download)  
+**Requirements:** GitHub account (free tier sufficient)  
+**Result:** Live public URL accessible from anywhere
+
+---
+
+### Option 2: Docker (Pre-built Image)
+
+**Best for:** Quick local testing with minimal setup.
+
+**Steps:**
+```bash
+# Download pre-built Docker setup
+curl -o docker-compose.yml https://raw.githubusercontent.com/code3ks/Sakon/main/docker-compose.prebuilt.yml
+
+# Start containers
+docker-compose up -d
+
+# Pull Gemma 4 model (one-time)
+docker-compose exec ollama ollama pull gemma4:e2b
+
+# Access the app
+# Frontend: http://localhost:3002
+# Backend: http://localhost:8080
+```
+
+**Time:** ~5-8 minutes  
+**Requirements:** Docker Desktop ([install here](https://docs.docker.com/get-docker/)), 8GB RAM  
+**Result:** App running at http://localhost:3002
+
+**To stop:**
+```bash
+docker-compose down
+```
+
+---
+
+### Option 3: Automated Setup (Recommended)
+
+**Best for:** Local development or testing on your own machine.
+
+One command does everything: installs dependencies, sets up Ollama, pulls Gemma 4, and starts the app.
 
 #### Windows:
 ```powershell
@@ -78,49 +134,23 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-The script will:
+**Time:** ~5-10 minutes  
+**Requirements:** 
+- Node.js 18+ ([download](https://nodejs.org/))
+- Ollama ([download](https://ollama.com/download))
+
+**Ports:**
+- Frontend: `http://localhost:3002`
+- Backend: `http://localhost:8080`
+
+**The script will:**
 1. Check Node.js version (requires 18+)
 2. Install npm dependencies
 3. Verify Ollama installation
 4. Start Ollama service
-5. Pull Gemma 4 E2B model (if not already present)
+5. Pull Gemma 4 E2B model
 6. Initialize the database
 7. Start the application
-
-**Ports:**
-- Frontend: `http://localhost:3002`
-- Backend: `http://localhost:8080`
-
-**Prerequisites:**
-- Node.js 18+ ([download here](https://nodejs.org/))
-- Ollama ([download here](https://ollama.com/download))
-
----
-
-### Option 2: Docker (Alternative)
-
-Run the entire stack in Docker containers (includes Ollama + Gemma 4).
-
-```bash
-# Build and start containers
-docker-compose up -d
-
-# Pull Gemma 4 model inside the Ollama container
-docker-compose exec ollama ollama pull gemma4:e2b
-
-# View logs
-docker-compose logs -f sakon-app
-```
-
-**Ports:**
-- Frontend: `http://localhost:3002`
-- Backend: `http://localhost:8080`
-- Ollama: `http://localhost:11434`
-
-**Prerequisites:**
-- Docker and Docker Compose ([install guide](https://docs.docker.com/get-docker/))
-
-**Note:** Docker setup requires at least 8GB RAM for Ollama + Gemma 4.
 
 ---
 
@@ -130,8 +160,8 @@ If you prefer manual installation:
 
 1. **Install Node.js** (v18 or higher)
 2. **Install Ollama** 
-   - macOS: `brew install --cask ollama-app` or download from [ollama.com](https://ollama.com)
-   - Windows: Download installer from [ollama.com](https://ollama.com)
+   - macOS: `brew install --cask ollama-app`
+   - Windows: Download from [ollama.com](https://ollama.com)
    - Linux: `curl -fsSL https://ollama.com/install.sh | sh`
 3. **Pull Gemma 4 model**
    ```bash
@@ -139,8 +169,8 @@ If you prefer manual installation:
    ```
 4. **Clone and install**
    ```bash
-   git clone <repo-url>
-   cd sakon-abu
+   git clone https://github.com/code3ks/Sakon.git
+   cd Sakon
    npm install
    npm run dev
    ```
@@ -157,9 +187,9 @@ If you prefer manual installation:
 
 🚀 **Want to test immediately?** Choose your preferred method:
 
-1. **[GitHub Codespaces](./CODESPACES.md)** - Run in browser with live URL (no installation)
-2. **[Pre-built Docker](./DOCKER_DEPLOY.md)** - One command to run everything (`docker-compose up`)
-3. **Automated Setup** - One-click script (see Setup section above)
+1. **GitHub Codespaces** - Run in browser with live URL (no installation) → [See instructions below](#option-1-github-codespaces)
+2. **Pre-built Docker** - One command to run everything → [See instructions below](#option-2-docker-pre-built-image)
+3. **Automated Setup** - One-click script → [See instructions below](#option-3-automated-setup-recommended)
 
 ---
 

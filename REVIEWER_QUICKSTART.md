@@ -26,8 +26,6 @@ npm start
 
 **Time:** ~8 minutes (includes Gemma 4 download)
 
-📖 **Full guide:** [CODESPACES.md](./CODESPACES.md)
-
 ---
 
 ## Option 2: Pre-built Docker (Fastest Local Setup)
@@ -48,8 +46,6 @@ http://localhost:3002
 
 **Time:** ~5-8 minutes  
 **Requires:** Docker Desktop ([install here](https://docs.docker.com/get-docker/))
-
-📖 **Full guide:** [DOCKER_DEPLOY.md](./DOCKER_DEPLOY.md)
 
 ---
 
@@ -206,8 +202,6 @@ Offline Queue (if no internet)
 ## Links
 
 - 📚 **Full Documentation:** [README.md](./README.md)
-- 🐳 **Docker Guide:** [DOCKER_DEPLOY.md](./DOCKER_DEPLOY.md)
-- ☁️ **Codespaces Guide:** [CODESPACES.md](./CODESPACES.md)
 - 📝 **Kaggle Writeup:** [KAGGLE_WRITEUP.md](./KAGGLE_WRITEUP.md)
 - 💻 **GitHub Repo:** https://github.com/code3ks/Sakon
 
