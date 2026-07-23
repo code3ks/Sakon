@@ -93,7 +93,7 @@ function ChatInterface({ messages, onSendMessage, isLoading, darkMode }) {
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-md">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
@@ -135,7 +135,7 @@ function ChatInterface({ messages, onSendMessage, isLoading, darkMode }) {
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
               msg.role === 'user'
-                ? 'bg-gradient-to-br from-amber-500 to-orange-600 text-white'
+                ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white'
                 : darkMode
                   ? 'bg-[#1E1E1E] text-gray-200'
                   : 'bg-gray-100 text-gray-900'
@@ -186,7 +186,7 @@ function ChatInterface({ messages, onSendMessage, isLoading, darkMode }) {
               placeholder="Type your message..."
               disabled={isLoading}
               rows={1}
-              className={`w-full px-4 py-3 pr-12 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
+              className={`w-full px-4 py-3 pr-12 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors ${
                 darkMode
                   ? 'bg-[#1E1E1E] text-white border-[#404040] placeholder-gray-500'
                   : 'bg-gray-50 text-gray-900 border-gray-200 placeholder-gray-400'
@@ -221,7 +221,7 @@ function ChatInterface({ messages, onSendMessage, isLoading, darkMode }) {
                 ? darkMode
                   ? 'bg-[#404040] text-gray-600'
                   : 'bg-gray-200 text-gray-400'
-                : 'bg-gradient-to-br from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700'
+                : 'bg-gradient-to-br from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
             } disabled:cursor-not-allowed`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

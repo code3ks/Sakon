@@ -11,8 +11,8 @@ function LetterPreview({ letter, onSend, darkMode }) {
       }`}>
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center max-w-md">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 flex items-center justify-center">
-              <svg className={`w-10 h-10 ${darkMode ? 'text-amber-500' : 'text-amber-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 flex items-center justify-center">
+              <svg className={`w-10 h-10 ${darkMode ? 'text-green-500' : 'text-green-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
@@ -30,19 +30,19 @@ function LetterPreview({ letter, onSend, darkMode }) {
               darkMode ? 'text-gray-400' : 'text-gray-600'
             }`}>
               <div className="flex items-start space-x-2">
-                <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-white text-xs font-bold">1</span>
                 </div>
                 <p>Tell me what letter you need</p>
               </div>
               <div className="flex items-start space-x-2">
-                <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-white text-xs font-bold">2</span>
                 </div>
                 <p>Provide your details</p>
               </div>
               <div className="flex items-start space-x-2">
-                <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-white text-xs font-bold">3</span>
                 </div>
                 <p>Review and download</p>
@@ -129,7 +129,7 @@ function LetterPreview({ letter, onSend, darkMode }) {
       </div>
 
       {/* Quality Checks */}
-      {letter.registerChecks && letter.registerChecks.length > 0 && (
+      {/* {letter.registerChecks && letter.registerChecks.length > 0 && (
         <div className={`px-6 py-4 border-b ${
           darkMode ? 'border-[#404040]' : 'border-gray-200'
         }`}>
@@ -154,7 +154,7 @@ function LetterPreview({ letter, onSend, darkMode }) {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Letter Content */}
       <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -186,7 +186,7 @@ function LetterPreview({ letter, onSend, darkMode }) {
           
           <button
             onClick={() => setShowModal(true)}
-            className="flex-1 min-w-[120px] px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-br from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 transition-all"
+            className="flex-1 min-w-[120px] px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-br from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all"
           >
             <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
