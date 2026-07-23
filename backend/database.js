@@ -32,6 +32,7 @@ export function initDatabase() {
       letter_type TEXT NOT NULL,
       content TEXT NOT NULL,
       created_at TEXT NOT NULL,
+      updated_at TEXT,
       FOREIGN KEY (session_id) REFERENCES sessions(id)
     );
 

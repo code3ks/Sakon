@@ -45,6 +45,14 @@ app.post('/api/chat', async (req, res) => {
       ORDER BY timestamp ASC
     `).all(sessionId);
 
+    // Check if there's an existing letter for this session
+    const existingLetter = db.prepare(`
+      SELECT * FROM letters
+      WHERE session_id = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+    `).get(sessionId);
+
     // Save user message
     db.prepare(`
       INSERT INTO messages (session_id, role, content, timestamp)
@@ -54,62 +62,139 @@ app.post('/api/chat', async (req, res) => {
     // Build conversation context
     const conversationContext = history.map(h => `${h.role}: ${h.content}`).join('\n') + `\nuser: ${message}`;
 
+    // Check if this is a letter update request (user providing additional info for existing letter)
+    const isLetterUpdate = existingLetter && (
+      message.toLowerCase().includes('my level') ||
+      message.toLowerCase().includes('my department') ||
+      message.toLowerCase().includes('my name') ||
+      message.toLowerCase().includes('matric number') ||
+      message.toLowerCase().includes('add') ||
+      message.toLowerCase().includes('update') ||
+      message.toLowerCase().includes('change') ||
+      /level\s*:?\s*\d00/i.test(message) ||
+      /department\s*:?\s*[A-Z]/i.test(message)
+    );
+
     // System prompt for the agent
-    const systemPrompt = `You are Sakon ABU, a helpful assistant for Ahmadu Bello University (ABU) students who need to write formal letters.
+    const systemPrompt = `You are Sakon ABU, a friendly and helpful AI assistant for Ahmadu Bello University (ABU) students.
 
-Your role:
-1. Have a natural conversation to understand what letter the student needs
-2. Collect REQUIRED information through focused questions
-3. Be friendly, concise, and supportive
+PERSONALITY:
+- Warm, conversational, and supportive
+- Speak naturally like a helpful colleague
+- Use casual language while maintaining professionalism
+- Be empathetic and understanding
 
-Letter types you handle:
-- Hostel complaints (roommate issues, facilities, security)
-- Exam deferral requests
-- Bursary/financial aid appeals  
-- Transcript requests
-- Course registration issues
+CONVERSATION FLOW:
+1. GREETINGS: Respond naturally to "hi", "hello", "hey" etc.
+   Example: "Hi! I'm Sakon ABU, your letter-writing assistant for ABU students. I can help you draft formal letters for:
+   
+   • Hostel complaints (roommate issues, facilities, security)
+   • Exam deferral requests  
+   • Bursary/financial aid appeals
+   • Transcript requests
+   • Course registration issues
+   
+   What brings you here today?"
 
-REQUIRED information for ALL letter types (you MUST collect these):
-1. Full name
-2. Matric number (format: U19AM1025)
-3. Department (e.g., "Computer Science", "Mechanical Engineering")
-4. Level (e.g., 100, 200, 300, 400, 500)
-5. The specific issue/request
-6. Relevant dates or timeline
+2. CASUAL CHAT: Handle small talk naturally before getting to business
+   - "How are you?" → "I'm doing great, thanks! How can I help you today?"
+   - "What can you do?" → Explain letter types
+   - Build rapport before asking for formal details
+
+3. INFORMATION GATHERING: Once user mentions their issue, collect details conversationally
+   Required info (don't list them robotically):
+   - Full name
+   - Matric number  
+   - Department
+   - Level
+   - Specific issue/request
+   - Relevant dates
+
+4. MISSING INFORMATION: If letter is generated but info is missing, user can provide updates
+   Example: "Add my level: 400" → Regenerate letter with the new info
 
 IMPORTANT RULES:
-- If the student's first message contains some info, DON'T ask for it again
-- If ANY required field is missing, explicitly ASK for it before drafting
-- Ask for missing info in ONE clear question, not separately
-- Example: "Great! I'll help with that. I need your full name, matric number, department, and level to draft the letter. Could you provide those?"
-- NEVER guess or infer department from matric number - always ask
-- NEVER guess or calculate level - always ask
+- Be conversational FIRST, formal LATER (only in the generated letter)
+- If user just says "hi" or "hello", greet back warmly and introduce yourself
+- Don't immediately demand information - let the conversation flow naturally
+- Once you know what they need, THEN ask for required details
+- If they already provided some info, acknowledge it and ask for what's missing
+- Keep responses SHORT (2-3 sentences max) unless greeting/explaining
+- Never say things like "I need" - instead say "Could you share..." or "What's your..."
 
-Keep responses SHORT (2-3 sentences). Ask efficiently.
+LETTER UPDATES:
+- If a letter exists and user provides new info, acknowledge you'll update it
+- Example: "Got it! Let me update your letter with Level 400"
+- Be natural about it, don't make it seem complicated
 
-Example good flow:
-User: "My roommate keeps stealing my things"
-You: "I'll help you draft a hostel complaint. I need your full name, matric number, department, and level to get started."`;
+Remember: You're a helpful friend who happens to be good at writing formal letters, not a form-filling robot.`;
 
     // Check if we should classify and generate the letter
-    const shouldGenerateLetter = history.length >= 2 || 
+    const isGreeting = /^(hi|hello|hey|good\s+(morning|afternoon|evening)|what's\s+up|sup)\b/i.test(message.trim());
+    
+    const shouldGenerateLetter = !isGreeting && (
+      history.length >= 2 || 
+      isLetterUpdate ||
       message.toLowerCase().includes('yes') || 
       message.toLowerCase().includes('proceed') ||
-      message.toLowerCase().includes('go ahead');
+      message.toLowerCase().includes('go ahead') ||
+      message.toLowerCase().includes('draft')
+    );
 
     let response = '';
     let functionCalls = [];
     let letter = null;
 
-    // Call Gemma for conversational response
-    console.log('[CHAT] Calling Gemma for CHAT REPLY...');
-    console.log('[CHAT] Chat prompt (first 200 chars):', conversationContext.substring(0, 200));
-    const gemmaResponse = await callGemma(conversationContext, systemPrompt);
-    console.log('[CHAT] Chat response received:', gemmaResponse.substring(0, 150));
-    response = gemmaResponse;
+    // Handle letter updates
+    if (isLetterUpdate && existingLetter) {
+      console.log('🔄 Letter update detected - regenerating with new info...');
+      response = await callGemma(conversationContext, systemPrompt);
+      
+      // Parse the letter type from existing letter
+      const letterType = existingLetter.letter_type;
+      
+      // Re-extract fields with the new information
+      const updatedFields = extractFields(conversationContext);
+      
+      // Generate updated letter
+      const updatedAiLetter = await generateAILetter(letterType, updatedFields, conversationContext);
+      
+      const registerCheck = checkRegister(updatedAiLetter, conversationContext);
+      
+      letter = {
+        id: existingLetter.id,
+        letterType,
+        content: registerCheck.corrected_letter,
+        registerChecks: registerCheck.flagged_issues,
+      };
+      
+      // Update the existing letter in database
+      db.prepare(`
+        UPDATE letters
+        SET content = ?, updated_at = ?
+        WHERE id = ?
+      `).run(letter.content, new Date().toISOString(), existingLetter.id);
+      
+      response = `Perfect! I've updated your letter with the new information. Check the preview to see the changes.`;
+      
+      functionCalls.push({
+        name: 'update_letter',
+        arguments: { letter_id: existingLetter.id },
+        result: 'Letter updated successfully',
+        timestamp: new Date().toISOString()
+      });
+    }
+    // Normal conversation flow
+    else {
+      // Call Gemma for conversational response
+      console.log('[CHAT] Calling Gemma for CHAT REPLY...');
+      console.log('[CHAT] Chat prompt (first 200 chars):', conversationContext.substring(0, 200));
+      const gemmaResponse = await callGemma(conversationContext, systemPrompt);
+      console.log('[CHAT] Chat response received:', gemmaResponse.substring(0, 150));
+      response = gemmaResponse;
 
-    // Check if we should attempt classification
-    if (shouldGenerateLetter && history.length >= 2) {
+      // Check if we should attempt classification
+      if (shouldGenerateLetter && history.length >= 2) {
       try {
         // Attempt to classify letter type
         console.log('[FUNCTION] classify_letter_type');
@@ -203,6 +288,7 @@ You: "I'll help you draft a hostel complaint. I need your full name, matric numb
         console.error('Error generating letter:', error);
       }
     }
+  }
 
     // Save assistant message
     db.prepare(`

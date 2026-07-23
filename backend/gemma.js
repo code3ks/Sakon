@@ -79,6 +79,16 @@ export async function callGemmaForLetter(prompt, systemPrompt = '') {
 function getFallbackResponse(prompt) {
   const lowerPrompt = prompt.toLowerCase();
 
+  // Handle greetings
+  if (/^(hi|hello|hey|good\s+(morning|afternoon|evening)|what's\s+up|sup)\b/i.test(prompt.trim())) {
+    return "Hi! I'm Sakon ABU, your letter-writing assistant for ABU students. I can help you draft formal letters for:\n\n• Hostel complaints (roommate issues, facilities, security)\n• Exam deferral requests\n• Bursary/financial aid appeals\n• Transcript requests\n• Course registration issues\n\nWhat brings you here today?";
+  }
+
+  // Handle "what can you do" type questions
+  if (lowerPrompt.includes('what') && (lowerPrompt.includes('do') || lowerPrompt.includes('help'))) {
+    return "I help ABU students draft formal letters! I can write:\n\n• Hostel complaint letters\n• Exam deferral requests\n• Bursary/financial aid appeals\n• Transcript requests\n• Course registration issue letters\n\nJust tell me what you need and I'll guide you through it!";
+  }
+
   // Check if this is a follow-up with details
   const hasDetails = /[A-Z][a-z]+\s+[A-Z][a-z]+/.test(prompt) || // Has name
                      /[UPG]\d{2}[A-Z]{2}\d{4}/.test(prompt) ||     // Has U-format matric
