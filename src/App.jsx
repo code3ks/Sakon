@@ -155,10 +155,10 @@ function App() {
         darkMode ? 'bg-[#1E1E1E] border-[#404040]' : 'bg-white border-gray-200'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex items-center justify-between h-14 px-20">
             {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+            <div className="flex items-center space-x-3 gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">S</span>
               </div>
               <span className={`font-semibold text-lg ${
